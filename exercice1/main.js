@@ -12,7 +12,13 @@ const outputTXO1 = new TXO(toAddress, 10);
 const tx = new Transaction([txo1, txo2, txo3], [outputTXO1]);
 let total = 0;
 
-// console.log(tx.input.length);
+console.log(tx.input[0].spent);
+
+tx.input[0].spend();
+
+console.log(tx.input[0].spent);
+
+return 0;
 
 for (let i = 0; i < tx.input.length; i++) {
   total = tx.input[i].amount + total;

@@ -1,24 +1,29 @@
 class Transaction {
   constructor(inputUTXOs, outputUTXOs) {
-    this.input = inputUTXOs;
-    this.output = outputUTXOs;
+    this.inputUTXOs = inputUTXOs;
+    this.outputUTXOs = outputUTXOs;
   }
   execute() {
-    const anySpent = this.input.some((x) => x.spent);
-    const total = 0;
+    const anySpent = this.inputUTXOs.some((x) => x.spent);
     if (anySpent) {
       throw new Error("Cannot include a spent UTXO");
     }
 
-    for (let i = 0; i < this.input.length; i++) {
-      total = this.input[i].amount + total;
+    const inputAmount = this.inputUTXOs.reduce((p, c) => {
+      return p + c.amount;
+    }, 0);
+    const outputAmount = this.outputUTXOs.reduce((p, c) => {
+      return p + c.amount;
+    }, 0);
+    if (inputAmount < outputAmount) {
+      throw new Error("Not enough here");
     }
 
-    if (total < this.output[0].amount) {
-      throw new Error(
-        "the total value of the inputs is less than the total value of the outputs"
-      );
-    }
+    this.inputUTXOs.forEach((utxo) => {
+      utxo.spend();
+    });
+
+    this.fee = inputAmount - outputAmount;
   }
 }
 
